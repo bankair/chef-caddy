@@ -38,8 +38,20 @@ variables = {
   :group => group
 }
 
-package 'Install authbind' do
-  package_name 'authbind'
+unless user.to_s == 'root'
+  package 'Install authbind' do
+    package_name 'authbind'
+  end
+  execute "authbind configuration for port 80" do
+    command "touch /etc/authbind/byport/80 && chown #{user} /etc/authbind/byport/80 && chmod 500 /etc/authbind/byport/80"
+    user "root"
+    action :run
+  end
+  execute "authbind configuration for port 443" do
+    command "touch /etc/authbind/byport/443 && chown #{user} /etc/authbind/byport/443 && chmod 500 /etc/authbind/byport/443"
+    user "root"
+    action :run
+  end
 end
 
 ark 'caddy' do
