@@ -29,19 +29,13 @@ require 'chef/version_constraint'
 caddy_path = '/usr/local/caddy-1'
 user = node['caddy']['user'] || :root
 group = node['caddy']['group'] || :root
-variables = {
-  :workdir => caddy_path,
-  :command => "authbind /usr/local/bin/#{node['caddy']['ark']['binary_name']}",
-  :options => "#{caddy_letsencrypt_arguments} -pidfile /var/run/caddy.pid -log #{caddy_path}/caddy.log -conf /etc/Caddyfile",
-  :ulimit => node['caddy']['ulimit'],
-  :user => user,
-  :group => group
-}
-
+binary = "/usr/local/bin/#{node['caddy']['ark']['binary_name']}"
+command_prefix = ''
 unless user.to_s == 'root'
   package 'Install authbind' do
     package_name 'authbind'
   end
+  command_prefix = `which authbind`.chomp + ' '
   execute "authbind configuration for port 80" do
     command "touch /etc/authbind/byport/80 && chown #{user} /etc/authbind/byport/80 && chmod 500 /etc/authbind/byport/80"
     user "root"
@@ -53,6 +47,16 @@ unless user.to_s == 'root'
     action :run
   end
 end
+
+variables = {
+  :workdir => caddy_path,
+  :command => command_prefix + binary,
+  :options => "#{caddy_letsencrypt_arguments} -pidfile /var/run/caddy.pid -log #{caddy_path}/caddy.log -conf /etc/Caddyfile",
+  :ulimit => node['caddy']['ulimit'],
+  :user => user,
+  :group => group
+}
+
 
 ark 'caddy' do
   url node['caddy']['ark']['url']
