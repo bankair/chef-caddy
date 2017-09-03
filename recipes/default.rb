@@ -31,12 +31,16 @@ user = node['caddy']['user'] || :root
 group = node['caddy']['group'] || :root
 variables = {
   :workdir => caddy_path,
-  :command => "/usr/local/bin/#{node['caddy']['ark']['binary_name']}",
+  :command => "authbind /usr/local/bin/#{node['caddy']['ark']['binary_name']}",
   :options => "#{caddy_letsencrypt_arguments} -pidfile /var/run/caddy.pid -log #{caddy_path}/caddy.log -conf /etc/Caddyfile",
   :ulimit => node['caddy']['ulimit'],
   :user => user,
   :group => group
 }
+
+package 'Install authbind' do
+  package_name 'authbind'
+end
 
 ark 'caddy' do
   url node['caddy']['ark']['url']
