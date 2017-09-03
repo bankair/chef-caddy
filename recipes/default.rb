@@ -72,6 +72,16 @@ execute "chown-caddy-configuration" do
   action :run
 end
 
+Array(node['caddy']['hosts']).each do |_hostname, host|
+  root_path = host['root']
+  next unless root_path
+  execute "change ownership and rights for #{root_path}" do
+    command "chown -R #{user}:#{group} #{root_path} && chmod u+rwx #{root_path}"
+    user "root"
+    action :run
+  end
+end
+
 if %w(arch gentoo fedora suse).include?(node['platform_family'])
   is_systemd = true
 elsif node['platform_family'] == 'rhel' && Chef::VersionConstraint.new('>= 7.0.0').include?(node['platform_version'])
