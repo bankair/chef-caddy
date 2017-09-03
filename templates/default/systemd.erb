@@ -8,6 +8,7 @@ After=network.target
 <%= @group ? "Group=#{@group}" : '#Group=some_group' %>
 WorkingDirectory=<%= @workdir %>
 LimitNOFILE=<%= @ulimit %>
+ExecStartPre=/sbin/setcap 'cap_net_bind_service=+ep' /usr/local/caddy-1/caddy
 ExecStart=<%= @command %> <%= @options %>
 Restart=on-failure
 StartLimitInterval=600
