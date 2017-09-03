@@ -4,8 +4,8 @@ Documentation=https://caddyserver.com/
 After=network.target
 
 [Service]
-#User=some_user
-#Group=some_group
+<%= @user ? "User=#{@user}" : '#User=some_user' %>
+<%= @group ? "Group=#{@group}" : '#Group=some_group' %>
 WorkingDirectory=<%= @workdir %>
 LimitNOFILE=<%= @ulimit %>
 ExecStart=<%= @command %> <%= @options %>

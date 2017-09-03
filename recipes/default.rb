@@ -54,7 +54,9 @@ variables = {
   :workdir => caddy_path,
   :command => "/usr/local/bin/#{node['caddy']['ark']['binary_name']}",
   :options => "#{caddy_letsencrypt_arguments} -pidfile /var/run/caddy.pid -log #{caddy_path}/caddy.log -conf /etc/Caddyfile",
-  :ulimit => node['caddy']['ulimit']
+  :ulimit => node['caddy']['ulimit'],
+  :user => node['caddy']['user'],
+  :group => node['caddy']['group']
 }
 
 if %w(arch gentoo fedora suse).include?(node['platform_family'])
